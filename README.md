@@ -58,6 +58,8 @@ The domain and e-mail stay exactly where they are. Only the website files change
 **Option B: free static hosting (Netlify or Cloudflare Pages)**
 Upload `site/`, then in Webglobe DNS change only the website record (A / CNAME). **Do not touch MX records**, so e-mail keeps working. `_redirects` handles the old addresses. Afterwards the WordPress hosting plan can be cancelled, which is a small yearly saving.
 
+**Demo link:** the coffee demo runs on Vercel (project `uklid-pospisil-demo`). `site/vercel.json` tells search engines not to index it. Delete the Vercel project after the meeting, and remove `vercel.json` if the real site is ever hosted on Vercel.
+
 **Before launch:** connect the contact form to e-mail. It's a free form service (Web3Forms or Formspree) delivering to info@uklid-pospisil.cz, a ~10-minute change in `main.js`. In the demo the form only shows what would be sent. Then remove the "Návrh nového webu" ribbon (`SHOW_DRAFT_RIBBON = False` in `build.py`) and submit `sitemap.xml` in Google Search Console.
 
 ## Rebuild
