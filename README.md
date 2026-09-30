@@ -49,6 +49,10 @@ A complete new website for **Michal Pospíšil – úklidové práce** (uklid-po
 Blue palette matched to his logo (#005AAB). The logo is his header icon from the old site (bucket, broom and sparkles), used as a CSS mask so it switches colour in dark mode; it is also the favicon and the iPhone home-screen icon (`src/logo/`).
 **Check:** the icon looks like it may come from an online icon library. If so, confirm the licence allows logo use (some free icons require attribution or forbid use as a logo).
 
+## Homepage photo
+
+The hero image (`site/img/hero-ai.jpg`) is **AI-generated** at Michal's request, so no real team member appears on the homepage. It was made with the "ICBINP" photo model via the free AI Horde service; the model's CreativeML OpenRAIL-M licence allows commercial use of the images. It is labelled "Ilustrační foto" on the page so no customer mistakes the man for Michal. The other photos on the site are still his real team photos (service cards, O nás) and still need the colleagues' consent.
+
 ## GDPR and legal checklist (not legal advice)
 
 What the website already does:
