@@ -479,6 +479,8 @@ def page(title, description, active, body, is_home=False):
     css = open(os.path.join(ROOT, "src", "style.css"), encoding="utf-8").read()
     js = open(os.path.join(ROOT, "src", "main.js"), encoding="utf-8").read()
     full_title = title if is_home else f"{title} | {F['name']}"
+    if is_home and MODE != "site":
+        full_title = F["name"]  # the private preview link is named after the business
     ld = ""
     if is_home:
         ld = json.dumps({
