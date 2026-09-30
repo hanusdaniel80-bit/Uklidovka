@@ -95,14 +95,8 @@ def stars(n=5):
 
 CHECK_LI = "<li>" + ico("check") + "<span>{}</span></li>"
 
-LOGO_MARK = (
-    '<svg class="logo-mark" viewBox="0 0 48 48" aria-hidden="true">'
-    '<rect class="lm-bg" x="1" y="1" width="46" height="46" rx="14"/>'
-    '<path class="lm-star" d="M22 9c1.1 8 4.6 11.5 12.5 12.6C26.6 22.7 23.1 26.2 22 34.2 20.9 26.2 17.4 22.7 9.5 21.6 17.4 20.5 20.9 17 22 9z"/>'
-    '<circle class="lm-dot" cx="34.5" cy="34" r="4"/>'
-    "</svg>"
-)
-LOGO_TEXT = '<span class="logo-text"><span class="logo-name">Úklid <span>Pospíšil</span></span><span class="logo-sub">Rodinná firma z Hradce</span></span>'
+LOGO_MARK = '<span class="logo-mark" aria-hidden="true"></span>'  # Michal's own logo, coloured by CSS
+LOGO_TEXT = '<span class="logo-text"><span class="logo-name">Úklid <span>Pospíšil</span></span><span class="logo-sub">Rychle a spolehlivě</span></span>'
 
 # --------------------------------------------------------------------------
 # Photos: all of them are Michal's own photos from the old website
@@ -161,7 +155,7 @@ def before_after(n=None):
 # --------------------------------------------------------------------------
 SERVICES = [
     {
-        "slug": "uklid-domacnosti", "key": "domacnosti", "icon": "home",
+        "slug": "uklid-domacnosti", "price_from": "od 350 Kč / hod", "price_anchor": "uklid", "key": "domacnosti", "icon": "home",
         "name": "Úklid domácností",
         "short": "Pravidelný úklid bytu či domu, generální úklid, úklid při stěhování i vyklízení.",
         "for": ["Domácnosti"],
@@ -186,7 +180,7 @@ SERVICES = [
         ],
     },
     {
-        "slug": "uklid-firem", "key": "firmy", "icon": "office",
+        "slug": "uklid-firem", "price_from": "od 370 Kč / hod", "price_anchor": "uklid", "key": "firmy", "icon": "office",
         "name": "Úklid firem a společných prostor",
         "short": "Kanceláře, ordinace, restaurace, obchody, hotely i chodby bytových domů.",
         "for": ["Firmy", "Bytové domy"],
@@ -211,7 +205,7 @@ SERVICES = [
         ],
     },
     {
-        "slug": "uklid-po-stavbe", "key": "stavba", "icon": "roller",
+        "slug": "uklid-po-stavbe", "price_from": "od 450 Kč / hod", "price_anchor": "uklid", "key": "stavba", "icon": "roller",
         "name": "Úklid po stavbě a malování",
         "short": "Novostavby před kolaudací, rekonstrukce, úklid po malířích a řemeslnících.",
         "for": ["Domácnosti", "Firmy"],
@@ -234,7 +228,7 @@ SERVICES = [
         ],
     },
     {
-        "slug": "myti-oken", "key": "okna", "icon": "window",
+        "slug": "myti-oken", "price_from": "od 150 Kč / okno", "price_anchor": "okna", "key": "okna", "icon": "window",
         "name": "Mytí oken a žaluzií",
         "short": "Okna všech druhů, výlohy a žaluzie. Rámy, parapety a kliky v ceně.",
         "for": ["Domácnosti", "Firmy"],
@@ -255,7 +249,7 @@ SERVICES = [
         ],
     },
     {
-        "slug": "cisteni-kobercu-a-calouneni", "key": "koberce", "icon": "sofa",
+        "slug": "cisteni-kobercu-a-calouneni", "price_from": "od 22 Kč / m²", "price_anchor": "koberce", "key": "koberce", "icon": "sofa",
         "name": "Čištění koberců, sedaček a matrací",
         "short": "Hloubkové čištění strojem Kärcher. Koberce, sedačky, matrace i interiér auta.",
         "for": ["Domácnosti", "Firmy", "Hotely"],
@@ -278,7 +272,7 @@ SERVICES = [
         ],
     },
     {
-        "slug": "uklid-po-pojistne-udalosti", "key": "pojistna", "icon": "drop",
+        "slug": "uklid-po-pojistne-udalosti", "price_from": "individuálně", "price_anchor": "uklid", "key": "pojistna", "icon": "drop",
         "name": "Úklid po havárii a škodní události",
         "short": "Vytopení, rozlitá voda, silné znečištění. V okolí Hradce přijedeme i v noci.",
         "for": ["Domácnosti", "Firmy", "Hotely"],
@@ -424,7 +418,7 @@ def footer():
         <li>{F['address']}</li></ul></div>
     </div>
     <div class="foot-bottom">
-      <span>© {F['legal']} · IČO {F['ico']} · Nejsme plátci DPH</span>
+      <span>© {F['legal']} · IČO {F['ico']} · {F['address']} · zapsán v živnostenském rejstříku · neplátce DPH</span>
       <span>{F['domain']}</span>
     </div>
   </div>
@@ -452,6 +446,8 @@ def font_css():
         faces.append(f"@font-face{{font-family:'Bricolage Grotesque';font-style:normal;font-display:swap;font-weight:200 800;src:{src(f'bricolage-grotesque-{sub}-wght-normal.woff2')};unicode-range:{rng}}}")
         for w in (400, 600, 700, 800):
             faces.append(f"@font-face{{font-family:'Figtree';font-style:normal;font-display:swap;font-weight:{w};src:{src(f'figtree-{sub}-{w}-normal.woff2')};unicode-range:{rng}}}")
+    mask = base64.b64encode(open(os.path.join(ROOT, "src", "logo", "logo-mask.png"), "rb").read()).decode()
+    faces.append(f":root{{--logo-mask:url(data:image/png;base64,{mask})}}")
     return "\n".join(faces)
 
 
@@ -506,8 +502,10 @@ def page(title, description, active, body, is_home=False):
 <meta property="og:description" content="{html.escape(description)}">
 <meta property="og:image" content="https://{F['domain']}/img/hero.jpg">
 <meta property="og:locale" content="cs_CZ">
-<meta name="theme-color" content="#0e6a5a">
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#005aab">
+<link rel="icon" href="assets/favicon-64.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Úklid Pospíšil">
 <link rel="stylesheet" href="assets/style.css">
 {ld}
 </head>
@@ -568,8 +566,8 @@ def cta_band(title="Řekněte nám, co potřebujete uklidit",
 # Real reviews, copied word for word from Firmy.cz (checked 30. 9. 2026)
 REVIEWS = [
     ("Doporučuji si zavolat firmu na čištění sedaček a koberců, nízké ceny, hezký přístup a rychlé jednání. Děkuji", "Marketa", "28. 8. 2026"),
-    ("Excelentní provedení služeb a vynikající zákaznický servis i v, řekněme, méně obvyklé časy. Služby této úklidové firmy jistě znovu využiji.", "Tomáš Jirousek", "12. 10. 2024"),
-    ("Děkuji za skvěle provedený úklid. Výborná domluva a ochotný přístup. Mohu jen a jen doporučit.", "Ondřej Vlasák", "12. 10. 2024"),
+    ("Excelentní provedení služeb a vynikající zákaznický servis i v, řekněme, méně obvyklé časy. Služby této úklidové firmy jistě znovu využiji.", "Tomáš J.", "12. 10. 2024"),
+    ("Děkuji za skvěle provedený úklid. Výborná domluva a ochotný přístup. Mohu jen a jen doporučit.", "Ondřej V.", "12. 10. 2024"),
 ]
 
 
@@ -761,8 +759,10 @@ def service_page(s):
     <div class="stack"><h2>Časté dotazy</h2><div class="faq">{faq}</div></div>
   </div>
   <aside class="side-card">
-    <h3>Jak počítáme cenu</h3>
+    <span class="eyebrow">Cena</span>
+    <p class="price-from">{s['price_from']}</p>
     <p class="muted">{s['pricing']}</p>
+    <a href="cenik.html#{s['price_anchor']}">Celý ceník {ico('arrow')}</a>
     <a class="btn btn--sun" href="kontakt.html#{s['slug']}">Chci kalkulaci zdarma</a>
     <a class="btn btn--ghost" href="{WHATSAPP}" target="_blank" rel="noopener">{ico('camera')}Poslat fotky</a>
     <p class="muted" style="font-size:.95rem">Nebo volejte <a href="{TEL}" class="nobr">{F['phone']}</a>. Když nezvedneme, jsme zrovna na zakázce a zavoláme vám zpět.</p>
@@ -777,59 +777,140 @@ def service_page(s):
 """
 
 
+# --------------------------------------------------------------------------
+# Price list — every figure taken from Michal's old ceník (uklid-pospisil.cz/cenik-sluzeb,
+# read 30. 9. 2026), regrouped. Rows: (item, price, note)
+# --------------------------------------------------------------------------
+PRICES = [
+    ("uklid", "Úklid", "home", [
+        ("Běžný úklid domácnosti", "350 Kč / hod", ""),
+        ("Restaurace, kavárna, obchod", "370 Kč / hod", "cena za 1 pracovníka"),
+        ("Kancelář, provozovna", "od 400 Kč / hod", ""),
+        ("Úklid po řemeslnících, malování, stavbě", "od 450 Kč / hod", ""),
+        ("Odstranění stavební nečistoty", "150–300 Kč / ks", "omítka, malta, silikon, barva"),
+        ("Práce ve výšce nad 3 m", "+80–200 Kč / ks", "ze žebříku nebo lešení"),
+        ("Generální úklid", "individuálně", "od podlahy po okna"),
+        ("Úklid po havárii a škodní události", "individuálně", "podle rozsahu, po prohlídce nebo podle fotek"),
+    ], ""),
+    ("okna", "Mytí oken", "window", [
+        ("Okno jednokřídlé", "150 Kč / ks", ""),
+        ("Okno dvoukřídlé, balkonové dveře", "350 Kč / ks", ""),
+        ("Francouzské okno", "450 Kč / ks", ""),
+        ("Výloha do 3 m²", "400 Kč / ks", ""),
+        ("Okna po stavbě", "+50 %", "malta, barva, silikon; myjeme dvakrát a se škrabkou"),
+    ], "Rámy, parapety a kliky jsou v ceně."),
+    ("koberce", "Koberce", "sofa", [
+        ("Luxování", "10 Kč / m²", ""),
+        ("Hloubkové čištění extraktorem", "22–50 Kč / m²", "podle znečištění"),
+        ("Koberec na schodech", "25 Kč / schod", ""),
+        ("Impregnace", "80 Kč / m²", "ochrana látky na 12 měsíců"),
+    ], ""),
+    ("calouneni", "Sedačky a čalounění", "sofa", [
+        ("Křeslo", "400–600 Kč", ""),
+        ("Sedačka dvoumístná", "650–1 000 Kč", ""),
+        ("Sedačka třímístná", "900–1 500 Kč", ""),
+        ("Rohová sedací souprava", "1 500–3 500 Kč", ""),
+        ("Čalouněná židle", "250–350 Kč / ks", ""),
+        ("Sada 4 jídelních židlí", "600–900 Kč", ""),
+        ("Rozkládací gauč s úložným prostorem", "+250 Kč", ""),
+    ], "Čistíme extraktorem Kärcher Puzzi. Suché obvykle za 2 až 4 hodiny."),
+    ("auto", "Interiér auta", "route", [
+        ("Malé auto", "2 290–3 000 Kč", "2 sedačky, zadní lavice, koberce"),
+        ("SUV, kombi", "3 200–4 000 Kč", "vše včetně kufru"),
+        ("Taxi a firemní flotily", "990 Kč / týden", "pravidelné udržovací čištění na stanovišti, první čištění o 20 % levněji"),
+    ], "Suché obvykle za 4 až 6 hodin podle počasí. V Hradci Králové doprava zdarma."),
+    ("doplnky", "Doplňkové služby a příplatky", "sparkle", [
+        ("Domácí mazlíček", "+300 Kč", "chlupy a dezinfekce; u auta +500 Kč"),
+        ("Extrémní znečištění", "+30 %", "krev, víno, mastnota"),
+        ("Odstranění zápachu", "+400 Kč", "kouř, zvířata, zvratky"),
+        ("Dezinfekce parou", "+300 Kč", ""),
+    ], ""),
+    ("doprava", "Čas a doprava", "clock", [
+        ("Pracovní den 18–22 h", "+500 Kč", "mimo Hradec Králové +1 000 Kč"),
+        ("Víkend a svátek", "+30 %", ""),
+        ("Po 22. hodině", "po domluvě", ""),
+        ("Doprava v Hradci Králové", "zdarma", ""),
+        ("Doprava mimo Hradec Králové", "10 Kč / km", ""),
+        ("Minimální cena zakázky", "600 Kč", ""),
+    ], "Platí pro domácnosti. Pro hotely a firmy platí podmínky expresního výjezdu níže."),
+]
+MATTRESSES = [("90 × 200", "600", "500", "350"), ("140 × 200", "750", "600", "550"), ("160 × 200", "900", "700", "650"),
+              ("180 × 200", "1 000", "800", "750"), ("200 × 200", "1 100", "900", "850")]
+ZONES = [("Zóna 1", "do 30 km", "Hradec Králové, Pardubice, Chrudim", "do 90 min", "bez příplatku"),
+         ("Zóna 2", "30–60 km", "Jičín, Náchod, Dvůr Králové", "do 180 min", "+300 Kč"),
+         ("Zóna 3", "60–100 km", "Poděbrady, Litomyšl", "do 240 min", "+600 Kč")]
+
+
+WIDE_PRICE_CARDS = {"doprava"}
+
+
+def price_card(key, title, icon, rows, note):
+    items = "".join(
+        f'<div class="price-row"><div class="pr-name">{n}{f"<small>{d}</small>" if d else ""}</div><div class="pr-price">{pr}</div></div>'
+        for n, pr, d in rows)
+    foot = f'<p class="price-note">{note}</p>' if note else ""
+    wide = " price-card--wide price-card--cols" if key in WIDE_PRICE_CARDS else ""
+    return f'<section class="price-card{wide}" id="{key}"><h3>{ico(icon)}{title}</h3><div class="price-rows">{items}</div>{foot}</section>'
+
+
 def cenik():
-    rows = "".join(
-        f'<tr><td><a href="{s["slug"]}.html">{s["name"]}</a></td><td>{s["pricing"]}</td></tr>' for s in SERVICES)
+    chips = [(k, t) for k, t, *_ in PRICES]
+    chips.insert(6, ("matrace", "Matrace"))
+    chips.append(("hotely", "Hotely a firmy"))
+    nav = "".join(f'<a href="#{k}">{t}</a>' for k, t in chips)
+    cards = [price_card(*p) for p in PRICES]
+    mat_rows = "".join(f"<tr><th scope=\"row\">{a}</th><td>{b} Kč</td><td>{c} Kč</td><td>{d} Kč</td></tr>" for a, b, c, d in MATTRESSES)
+    mattress = f"""<section class="price-card price-card--wide" id="matrace"><h3>{ico('sofa')}Matrace</h3>
+  <div class="table-wrap table-wrap--plain"><table class="price-table">
+    <thead><tr><th>Rozměr (cm)</th><th>Domácnost</th><th>Hotel 5–19 ks</th><th>Hotel 20 a více ks</th></tr></thead>
+    <tbody>{mat_rows}</tbody></table></div>
+  <p class="price-note">Cena za kus. Čistíme obě strany i boky, s dezinfekcí Sanytol, suché do 2 hodin. Minimální zakázka pro domácnosti 600 Kč. Hotely mají nižší cenu, protože čistíme mnoho matrací na jednom místě.</p>
+</section>"""
+    cards.insert(6, mattress)
+    zone_rows = "".join(f"<tr><th scope=\"row\">{z}<small>{km}</small></th><td>{ex}</td><td>{t}</td><td>{fee}</td></tr>" for z, km, ex, t, fee in ZONES)
+    hotels = f"""<section class="price-card price-card--wide price-card--accent" id="hotely"><h3>{ico('moon')}Hotely a firmy: expresní výjezd nonstop</h3>
+  <p class="muted">Krev, moč, zvratky, rozlité víno, voda nebo zápach. Přijedeme rychle, vyčistíme matrace i čalounění a pokoj můžete znovu prodat. Schnutí 2 až 4 hodiny.</p>
+  <div class="table-wrap table-wrap--plain"><table class="price-table">
+    <thead><tr><th>Vzdálenost od HK</th><th>Například</th><th>Příjezd</th><th>Příplatek</th></tr></thead>
+    <tbody>{zone_rows}</tbody></table></div>
+  <ul class="checks" style="margin-top:14px">
+    {CHECK_LI.format('nonstop včetně nocí, víkendů a svátků bez příplatku')}
+    {CHECK_LI.format('minimální fakturace výjezdu 1 800 Kč')}
+    {CHECK_LI.format('jedno křeslo nebo jednu matraci vyčistíme na ukázku zdarma')}
+  </ul>
+</section>"""
     return f"""
 <section class="page-hero"><div class="wrap">
   <div class="crumbs"><a href="index.html">Úvod</a> / <span>Ceník</span></div>
-  <h1>Ceník a kalkulace</h1>
-  <p class="lead">Každý úklid je jiný. Garsonka po malování a dům po zimě se nedají nacenit stejně, proto cenu stanovujeme vždy podle vašeho zadání. Kalkulace je zdarma a cenu znáte dopředu.</p>
+  <h1>Ceník</h1>
+  <p class="lead">Ceny jsou konečné, nejsme plátci DPH. U rozpětí záleží na velikosti a míře znečištění, přesnou cenu vám řekneme předem. Kalkulace je zdarma.</p>
+  <nav class="chips" aria-label="Části ceníku">{nav}</nav>
 </div></section>
 
-<section class="section" style="padding-top:28px"><div class="wrap stack" style="gap:24px">
-  <h2>Jak počítáme cenu u&nbsp;jednotlivých služeb</h2>
-  <div class="table-wrap"><table>
-    <thead><tr><th>Služba</th><th>Jak se cena počítá</th></tr></thead>
-    <tbody>{rows}</tbody>
-  </table></div>
+<section class="section" style="padding-top:28px"><div class="wrap">
+  <div class="price-grid">{''.join(cards)}{hotels}</div>
 </div></section>
 
 <section class="section section--tint"><div class="wrap grid-2" style="align-items:start">
   <div class="stack" style="gap:20px">
-    <h2>Co ovlivňuje cenu</h2>
+    <h2>Dobré vědět</h2>
     <div class="check-card"><ul class="checks">
-      <li>{ico('check')}<span><b>Rozsah práce</b>, tedy počet místností, metrů čtverečních, oken nebo kusů nábytku.</span></li>
-      <li>{ico('check')}<span><b>Míra znečištění a přístupnost.</b> Běžný úklid je jiný než úklid po stavbě.</span></li>
-      <li>{ico('check')}<span><b>Čas.</b> Večer, o víkendu a ve svátek účtujeme příplatek, vždy předem domluvený.</span></li>
-      <li>{ico('check')}<span><b>Vzdálenost.</b> V Hradci Králové je doprava zdarma, jinde podle kilometrů.</span></li>
-    </ul></div>
-    <h2 style="margin-top:12px">Dobré vědět</h2>
-    <div class="check-card"><ul class="checks">
-      <li>{ico('check')}<span><b>Nejsme plátci DPH.</b> Cena, kterou vám řekneme, je konečná.</span></li>
+      <li>{ico('check')}<span><b>Nejsme plátci DPH.</b> Uvedené ceny jsou konečné.</span></li>
+      <li>{ico('check')}<span><b>Cena se odvíjí</b> od míry znečištění a přístupnosti. Vždy ji znáte předem.</span></li>
       <li>{ico('check')}<span><b>Máme pojištění odpovědnosti</b> za případné škody.</span></li>
-      <li>{ico('check')}<span><b>Fakturujeme</b> firmám i OSVČ.</span></li>
-      <li>{ico('check')}<span><b>Kalkulace je zdarma</b> a k ničemu vás nezavazuje.</span></li>
+      <li>{ico('check')}<span><b>Fakturujeme</b> firmám i OSVČ, u firem i na základě smlouvy.</span></li>
+      <li>{ico('check')}<span><b>Vlastní technika a chemie:</b> profesionální stroje a prostředky Kärcher.</span></li>
     </ul></div>
   </div>
   <div class="side-card">
     <span class="eyebrow">{ico('camera')} Nejrychlejší cesta k ceně</span>
     <h3 style="font-size:1.5rem">Pošlete fotky přes WhatsApp</h3>
-    <p class="muted">Nafoťte, co potřebujete uklidit nebo vyčistit, a připište obec a přibližnou velikost. Podle fotek vám obvykle řekneme cenu bez nutnosti prohlídky.</p>
+    <p class="muted">Nafoťte, co potřebujete uklidit nebo vyčistit, a připište obec a přibližnou velikost. Podle fotek vám obvykle řekneme přesnou cenu bez nutnosti prohlídky.</p>
     <a class="btn btn--sun" href="{WHATSAPP}" target="_blank" rel="noopener">{ico('chat')}Poslat fotky na WhatsApp</a>
     <p class="muted" style="font-size:.95rem">Číslo pro WhatsApp i volání: <b class="nobr">{F['phone']}</b></p>
   </div>
 </div></section>
-
-<section class="section"><div class="wrap stack" style="gap:20px;max-width:900px">
-  <h2>Časté dotazy k&nbsp;ceně</h2>
-  <div class="faq">
-    <details><summary>Je kalkulace opravdu zdarma?</summary><p>Ano. Nacenění po telefonu, podle fotek i prohlídka u větších zakázek jsou zdarma a k ničemu vás nezavazují.</p></details>
-    <details><summary>Může se cena na místě změnit?</summary><p>Jen pokud se na místě ukáže něco, o čem jsme nevěděli, a vždy až po domluvě s vámi. Proto u větších zakázek jezdíme nejdřív na prohlídku.</p></details>
-    <details><summary>Proč nemáte ceny přímo na webu?</summary><p>Protože by vás zbytečně mátly. Cena záleží na rozsahu a stavu prostoru a u každé zakázky je jiná. Po krátkém telefonátu nebo pár fotkách vám řekneme přesnou částku.</p></details>
-  </div>
-</div></section>
-{cta_band("Chcete znát cenu?", "Zavolejte nebo vyplňte krátkou poptávku. Na poptávky odpovídáme co nejdřív, obvykle do hodiny.")}
+{cta_band("Chcete přesnou cenu?", "Zavolejte nebo vyplňte krátkou poptávku. Na poptávky odpovídáme co nejdřív, obvykle do hodiny.")}
 """
 
 
@@ -1020,39 +1101,48 @@ def kariera():
     <p class="muted">Zavolejte nebo pošlete krátký životopis e-mailem. Napište, jestli hledáte brigádu, přivýdělek ke stálé práci nebo k důchodu.</p>
     <a class="btn btn--sun" href="{TEL}">{ico('phone')}<span class="nobr">{F['phone']}</span></a>
     <a class="btn btn--ghost" href="{MAILTO}?subject=Z%C3%A1jem%20o%20pr%C3%A1ci">{ico('mail')}{F['email']}</a>
+    <p class="muted" style="font-size:.95rem">Životopisy použijeme jen pro výběr spolupracovníků a nejpozději po roce je smažeme. Více v&nbsp;<a href="ochrana-udaju.html">zásadách ochrany osobních údajů</a>.</p>
   </div>
 </div></section>
 """
 
 
 def gdpr():
+    def block(title, body):
+        return f'<div class="legal-block"><h2>{title}</h2>{body}</div>'
+    table = """<div class="table-wrap"><table>
+      <thead><tr><th>Kdy údaje získáme</th><th>Jaké údaje</th><th>Proč a na jakém základě</th><th>Jak dlouho</th></tr></thead>
+      <tbody>
+        <tr><td>Poptávka (formulář, telefon, e-mail, WhatsApp)</td><td>jméno, telefon, e-mail, místo úklidu, popis a fotky prostoru</td><td>odpověď na poptávku a příprava nabídky; jednání o smlouvě (čl. 6 odst. 1 písm. b GDPR)</td><td>nejvýše 1 rok, pokud nevznikne zakázka</td></tr>
+        <tr><td>Zakázka a fakturace</td><td>jméno, adresa, kontakt, fakturační údaje, případně klíče od prostor</td><td>provedení úklidu a vystavení dokladu; plnění smlouvy a zákonné povinnosti (písm. b a c)</td><td>po dobu spolupráce, účetní doklady 10 let</td></tr>
+        <tr><td>Zájem o práci</td><td>jméno, telefon, e-mail, životopis</td><td>výběr spolupracovníků; jednání o smlouvě (písm. b), případně váš souhlas (písm. a)</td><td>nejvýše 1 rok</td></tr>
+        <tr><td>Hodnocení na webu</td><td>křestní jméno a iniciála, text hodnocení</td><td>zveřejnění veřejně dostupných hodnocení z Firmy.cz; oprávněný zájem (písm. f)</td><td>dokud hodnocení nesmažete nebo nevznesete námitku</td></tr>
+      </tbody></table></div>"""
+    b0 = block("Správce údajů", f"<p>{F['legal']}, IČO {F['ico']}, se sídlem {F['address']}. Kontakt pro otázky k osobním údajům: <a href=\"{MAILTO}\">{F['email']}</a>, telefon {F['phone']}, datová schránka {F['datovka']}.</p><p class=\"muted\">Pověřence pro ochranu osobních údajů jmenovat nemusíme, zpracováváme jen běžné údaje v malém rozsahu.</p>")
+    b1 = block("Jaké údaje zpracováváme a proč", table)
+    b2 = block("Komu údaje předáváme", "<p>Údaje neprodáváme a nepředáváme k marketingu. Přístup k nim mají jen naši zpracovatelé, a to poskytovatel webhostingu a e-mailu (Webglobe), účetní a případně spolupracovníci, kteří pro vás úklid provádějí. Dále orgány veřejné moci, pokud to stanoví zákon.</p>")
+    b3 = block("Cookies a měření návštěvnosti", "<p>Tento web <b>nepoužívá cookies</b> ani nástroje pro měření návštěvnosti či reklamu. Písma načítá z vlastního serveru, takže o vaší návštěvě nedáváme vědět žádné třetí straně. Proto se vás na nic neptáme žádnou lištou.</p>")
+    b4 = block("Vaše práva", f"<p>Máte právo na přístup ke svým údajům, na jejich opravu nebo výmaz, na omezení zpracování, na přenositelnost a právo vznést námitku. Pokud údaje zpracováváme na základě souhlasu, můžete ho kdykoli odvolat. Stačí napsat na <a href=\"{MAILTO}\">{F['email']}</a>, odpovíme do 30 dnů.</p><p>Stížnost můžete podat u Úřadu pro ochranu osobních údajů, Pplk. Sochora 27, 170 00 Praha 7, <a href=\"https://uoou.gov.cz\" target=\"_blank\" rel=\"noopener\">uoou.gov.cz</a>.</p>")
+    b5 = block("Spotřebitelské spory", "<p>Pokud jste spotřebitel a nedohodneme se, můžete se obrátit na subjekt mimosoudního řešení spotřebitelských sporů, kterým je Česká obchodní inspekce, <a href=\"https://adr.coi.cz\" target=\"_blank\" rel=\"noopener\">adr.coi.cz</a>.</p>")
+    b6 = block("Údaje o podnikateli", f"<p>{F['legal']}, IČO {F['ico']}, {F['address']}. Fyzická osoba podnikající podle živnostenského zákona, zapsaná v živnostenském rejstříku. Nejsme plátci DPH.</p>")
     return f"""
 <section class="page-hero"><div class="wrap">
   <div class="crumbs"><a href="index.html">Úvod</a> / <span>Ochrana osobních údajů</span></div>
   <h1>Ochrana osobních údajů</h1>
-  <p class="lead">Stručně a srozumitelně: jaké údaje od vás potřebujeme, proč a jak s nimi zacházíme. V souladu s nařízením GDPR a zákonem č. 110/2019 Sb.</p>
+  <p class="lead">Srozumitelně: jaké údaje od vás potřebujeme, proč a jak s nimi zacházíme. Podle nařízení (EU) 2016/679 (GDPR) a zákona č. 110/2019 Sb. Platné od [datum spuštění webu].</p>
 </div></section>
 
-<section class="section" style="padding-top:24px"><div class="wrap prose">
-  <h2>Kdo vaše údaje zpracovává</h2>
-  <p>{F['legal']}, IČO {F['ico']}, {F['address']}. E-mail {F['email']}, telefon {F['phone']}.</p>
-  <h2>Jaké údaje a proč</h2>
-  <p>Jméno, telefon, e-mail a adresu místa úklidu, abychom mohli vyřídit vaši poptávku, domluvit a provést úklid a vystavit doklad. Právním základem je jednání o smlouvě a její plnění a u dokladů naše zákonná povinnost.</p>
-  <h2>Jak dlouho je uchováváme</h2>
-  <p>Po dobu spolupráce a poté jen tak dlouho, jak ukládá zákon, například účetní doklady 10 let. Poptávky, ze kterých nevznikla zakázka, mažeme nejpozději do jednoho roku.</p>
-  <h2>Komu je předáváme</h2>
-  <p>Nikomu je neprodáváme. Přístup k nim mají jen naši dodavatelé účetních, IT a webhostingových služeb a orgány veřejné moci, pokud to stanoví zákon.</p>
-  <h2>Cookies</h2>
-  <p>Tento web nepoužívá reklamní ani sledovací cookies a písma načítá z vlastního serveru.</p>
-  <h2>Vaše práva</h2>
-  <p>Máte právo na přístup ke svým údajům, jejich opravu nebo výmaz, omezení zpracování, přenositelnost a vznesení námitky. Stačí napsat na {F['email']}. Stížnost můžete podat u Úřadu pro ochranu osobních údajů, <a href="https://uoou.gov.cz" target="_blank" rel="noopener">uoou.gov.cz</a>.</p>
+<section class="section" style="padding-top:24px"><div class="wrap stack" style="gap:36px;max-width:980px">
+  {b0}
+  {b1}
+  {b2}
+  {b3}
+  {b4}
+  {b5}
+  {b6}
 </div></section>
 """
 
-
-FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect x="1" y="1" width="46" height="46" rx="14" fill="#0e6a5a"/>'
-           '<path fill="#fff" d="M22 9c1.1 8 4.6 11.5 12.5 12.6C26.6 22.7 23.1 26.2 22 34.2 20.9 26.2 17.4 22.7 9.5 21.6 17.4 20.5 20.9 17 22 9z"/>'
-           '<circle fill="#f6b93b" cx="34.5" cy="34" r="4"/></svg>')
 
 # Old URLs -> new pages, so links from Google and old flyers keep working (see README)
 REDIRECTS = {
@@ -1098,8 +1188,8 @@ def build():
             fh.write(font_css() + "\n" + open(os.path.join(ROOT, "src", "style.css"), encoding="utf-8").read())
         shutil.copy(os.path.join(ROOT, "src", "main.js"), os.path.join(OUT, "assets", "main.js"))
         shutil.copytree(os.path.join(ROOT, "src", "fonts"), os.path.join(OUT, "assets", "fonts"), dirs_exist_ok=True)
-        with open(os.path.join(OUT, "assets", "favicon.svg"), "w", encoding="utf-8") as fh:
-            fh.write(FAVICON)
+        for f in ("favicon-64.png", "apple-touch-icon.png", "logo-original.png"):
+            shutil.copy(os.path.join(ROOT, "src", "logo", f), os.path.join(OUT, "assets", f))
         # Netlify / Cloudflare Pages format; Apache (.htaccess) version for classic Czech webhosting
         with open(os.path.join(OUT, "_redirects"), "w", encoding="utf-8") as fh:
             fh.write("".join(f"{a}  {b}  301\n" for a, b in REDIRECTS.items()))

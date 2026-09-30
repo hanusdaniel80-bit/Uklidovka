@@ -35,7 +35,7 @@ A complete new website for **Michal Pospíšil – úklidové práce** (uklid-po
 
 1. **The wife.** The site says he runs the firm with his wife (Daniel's information). The old site only says "Jmenuji se Michal". Add her name and a real photo of the two of them (there is a marked slot on the O nás page).
 2. **Hero photo.** It shows two colleagues in "Pospíšilovi" T-shirts. He needs their OK to use it, which he presumably already has since it's on the old site.
-3. **Prices.** The demo deliberately shows *how* pricing works, not amounts (Daniel's choice). His old ceník *does* have full prices (e.g. 350 Kč/h cleaning, windows from 150 Kč/pc). If he wants them shown, it's one table in `build.py`.
+3. **Prices.** The Ceník page now shows his full price list (every figure copied from his old ceník and regrouped; data lives in `PRICES` in `build.py`). He should check it once, especially: minimum order is 600 Kč on his site but 1 000 Kč on firmy.cz; the car promo ("od 2 290 Kč, běžně 3 000 Kč") is shown as a range 2 290–3 000 Kč; the "20+ matrací" price was a pre-winter promo on his site and is shown as a standing volume price.
 4. **Contradictions on the old site** that the new one had to resolve. He should confirm the chosen wording:
    - drying time "2–4 h" vs. "4–6 h" → new site: 2–4 h for upholstery/carpets, 4–6 h for cars
    - "24/7 without surcharge" vs. "+500 Kč after 18:00" vs. "24/7 only within 20 km" → new site: evenings/weekends with a surcharge agreed in advance; emergencies near HK even at night
@@ -43,6 +43,28 @@ A complete new website for **Michal Pospíšil – úklidové práce** (uklid-po
    - e-mail on firmy.cz is still UklidovkaHK@seznam.cz → update it there to info@
 5. **Five reviews on the old /recenze page** (Marek L., Veronika H. …) were not used. They can't be verified and read like template text. Only the real firmy.cz reviews are on the new site.
 6. **Services that were dropped as separate pages** but are mentioned inside others: car interiors and the taxi fleet offer (in *koberce*), the hotel express service (in *firmy*), house clearing (in *domácnosti*), blinds (in *okna*).
+
+## Branding
+
+Blue palette matched to his logo (#005AAB). The logo is his header icon from the old site (bucket, broom and sparkles), used as a CSS mask so it switches colour in dark mode; it is also the favicon and the iPhone home-screen icon (`src/logo/`).
+**Check:** the icon looks like it may come from an online icon library. If so, confirm the licence allows logo use (some free icons require attribution or forbid use as a logo).
+
+## GDPR and legal checklist (not legal advice)
+
+What the website already does:
+- **Privacy notice** (`ochrana-udaju.html`): controller, what data and why, legal basis, retention, recipients, rights, ÚOOÚ. Linked from the footer, the contact form and the jobs page.
+- **No cookies, no analytics, fonts self-hosted** → no cookie banner is needed. If he ever adds Google Analytics, Meta Pixel or embedded Google Maps, a consent banner becomes mandatory.
+- **Business identification** required by the Civil Code (§ 435): name, IČO, registered address, trade-register note, VAT status. In the footer of every page.
+- **Consumer disputes (ADR):** Česká obchodní inspekce named, as the consumer protection act requires.
+- **Reviews** shown with first name + initial only.
+- The form uses "beru na vědomí" (acknowledgement), not consent: correct, because answering an enquiry is pre-contract processing.
+
+What Michal must do himself:
+1. **Written consent from the colleagues in the photos** (a signed line per person is enough). This is the biggest real risk.
+2. **Pick how the form sends e-mail.** Best: a small PHP mail script on his Webglobe hosting, so data stays in the EU with a processor he already has. A US form service (Formspree, Web3Forms) would need adding to the privacy notice.
+3. **Fill in the "Platné od" date** in the privacy notice at launch.
+4. **Delete old enquiries/CVs after one year**, as the notice promises.
+5. Webglobe's terms include the data-processing agreement; no extra contract is needed for hosting and e-mail.
 
 ## Switching from the old site to the new one (the part Michal worries about)
 
