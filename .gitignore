@@ -1,2 +1,4 @@
 dist-artifact/
 __pycache__/
+site/poptavka-config.php
+poptavka-config.php

@@ -1,3 +1,6 @@
+<FilesMatch "^poptavka-config">
+  Require all denied
+</FilesMatch>
 RewriteEngine On
 RewriteRule ^nase\-sluzby/?$ /sluzby.html [R=301,L]
 RewriteRule ^cenik\-sluzeb/?$ /cenik.html [R=301,L]

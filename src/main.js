@@ -31,19 +31,46 @@
     if (m) { for (var i = 0; i < sel.options.length; i++) { if (sel.options[i].value === m) sel.selectedIndex = i; } }
   }
 
-  // Enquiry form. The live site will send this to e-mail through a form
-  // service (see README). In the demo we show what would be sent.
+  // Enquiry form. On the real domain it is sent by poptavka.php (Webglobe PHP mail),
+  // anywhere else (demo links) it only shows what would be sent.
   var form = document.getElementById('poptavka');
   if (form) {
+    var LIVE = /(^|\.)uklid-pospisil\.cz$/.test(location.hostname);
+    var t = document.getElementById('f-t');
+    if (t) t.value = Math.floor(Date.now() / 1000);
+    var errBox = document.getElementById('poptavka-error');
+    var submitBtn = document.getElementById('poptavka-submit');
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (!form.reportValidity()) return;
       var d = new FormData(form);
+      if (LIVE) {
+        errBox.hidden = true;
+        submitBtn.disabled = true;
+        fetch(form.action, { method: 'POST', body: d, headers: { 'Accept': 'application/json' } })
+          .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
+          .then(function (res) {
+            if (!res.ok) throw new Error(res.message || 'error');
+            form.hidden = true;
+            var sent = document.getElementById('poptavka-sent');
+            sent.hidden = false;
+            sent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          })
+          .catch(function (err) {
+            if (err && err.message && err.message !== 'error' && err.message.indexOf('fetch') < 0) {
+              errBox.firstChild.textContent = err.message + ' ';
+            }
+            errBox.hidden = false;
+            submitBtn.disabled = false;
+          });
+        return;
+      }
+      var sel = form.querySelector('#f-sluzba');
       var lines = [
         'Jméno: ' + (d.get('jmeno') || ''),
         'Telefon: ' + (d.get('telefon') || ''),
         'E-mail: ' + (d.get('email') || '—'),
-        'Služba: ' + (d.get('sluzba') || ''),
+        'Služba: ' + (sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : ''),
         'Místo úklidu: ' + (d.get('misto') || ''),
         'Termín: ' + (d.get('termin') || 'dle domluvy'),
         '',

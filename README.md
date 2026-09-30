@@ -82,7 +82,24 @@ Upload `site/`, then in Webglobe DNS change only the website record (A / CNAME).
 
 **Demo link:** the coffee demo runs on Vercel (project `uklid-pospisil-demo`). `site/vercel.json` tells search engines not to index it. Delete the Vercel project after the meeting, and remove `vercel.json` if the real site is ever hosted on Vercel.
 
-**Before launch:** connect the contact form to e-mail. It's a free form service (Web3Forms or Formspree) delivering to info@uklid-pospisil.cz, a ~10-minute change in `main.js`. In the demo the form only shows what would be sent. Then remove the "Návrh nového webu" ribbon (`SHOW_DRAFT_RIBBON = False` in `build.py`) and submit `sitemap.xml` in Google Search Console.
+**Before launch:** remove the "Návrh nového webu" ribbon (`SHOW_DRAFT_RIBBON = False` in `build.py`) and submit `sitemap.xml` in Google Search Console.
+
+## Contact form (Webglobe)
+
+The form posts to `site/poptavka.php`, which emails each enquiry to info@uklid-pospisil.cz straight from his Webglobe hosting. There's no third-party service, and data stays with Webglobe.
+- **Spam protection:** a hidden trap field, a "sent faster than 3 seconds" check, and max 5 enquiries per IP per hour. Header-injection attempts are neutralised.
+- **Where it works:** only on `uklid-pospisil.cz` (and its subdomains). On the demo links the form just shows a preview.
+- **Tested here** end to end: PHP 8.4, both sending methods, a real browser, wrong password, spam and injection attempts.
+
+**Setup on Webglobe (about 10 minutes):**
+1. Upload the whole `site/` folder, including `poptavka.php` and `.htaccess`.
+2. In the Webglobe admin, make sure the hosting runs **PHP 8.1 or newer**.
+3. Recommended by Webglobe (less spam): copy `poptavka-config.example.php` to **`poptavka-config.php` one folder above the web root** (or next to `poptavka.php`; `.htaccess` blocks access to it), and fill in the password of the info@ mailbox. It then sends via `mail.webglobe.cz:465` with a login.
+   Without that file it falls back to PHP `mail()`, which Webglobe allows (max 10 emails/min) but which lands in spam more often.
+4. Send a test enquiry, then check the inbox **and the spam folder**. Webglobe suggests testing deliverability at mail-tester.com.
+5. The domain already has SPF, DKIM (`default._domainkey`) and DMARC (`p=none`) records at Webglobe, so SMTP-sent mail should pass the checks.
+
+Sources: [Webglobe: Odesílání e-mailu z webu](https://www.webglobe.cz/poradna/odesilani-emailu-z-webu), [Webglobe: formuláře a spam](https://www.webglobe.cz/poradna/jak-neodesilat-email-z-webovych-formularu-do-spamu).
 
 ## Rebuild
 

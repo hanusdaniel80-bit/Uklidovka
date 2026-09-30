@@ -480,3 +480,8 @@ td a { font-weight: 700; }
   .pr-name { font-size: 1rem; }
   .pr-price { font-size: .98rem; }
 }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.form { position: relative; }
+.form-error { color: #b42318; background: color-mix(in srgb, #b42318 8%, var(--surface)); border: 1px solid color-mix(in srgb, #b42318 35%, var(--line)); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 1rem; }
+.btn:disabled { opacity: .6; cursor: progress; transform: none; }
+.photo-label { position: absolute; right: 12px; top: 12px; font: 600 .72rem/1 var(--font-body); letter-spacing: .04em; color: #fff; background: rgba(13, 37, 72, .55); padding: 5px 9px; border-radius: 999px; }

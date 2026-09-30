@@ -104,7 +104,8 @@ LOGO_TEXT = '<span class="logo-text"><span class="logo-name">Úklid <span>Pospí
 # key: (file, alt text, fallback icon, object-position)
 # --------------------------------------------------------------------------
 PHOTOS = {
-    "hero": ("hero.jpg", "Dvě kolegyně z týmu Úklid Pospíšil ve firemních tričkách s čisticím strojem Kärcher", "home", "50% 40%"),
+    # Hero: AI-generated illustration (Michal's wish), not a real employee -> labelled as such
+    "hero": ("hero-ai.jpg", "Ilustrační foto: pracovník úklidové firmy v modré pracovní uniformě v čisté kuchyni", "home", "50% 35%"),
     "domacnosti": ("domacnosti.jpg", "Kolegyně vysává podlahu v bytě", "home", "50% 45%"),
     "firmy": ("firmy.jpg", "Kolegyně omývá dveře na chodbě", "office", "50% 40%"),
     "stavba": ("stavba.jpg", "Úklid nového bytu po řemeslnících, práce ze štaflí", "roller", "50% 40%"),
@@ -116,12 +117,13 @@ PHOTOS = {
 }
 
 
-def photo(key, extra_cls="", eager=False):
+def photo(key, extra_cls="", eager=False, label=""):
     file, alt, icon, pos = PHOTOS[key]
     if os.path.exists(os.path.join(ROOT, "site", "img", file)):
         loading = "eager" if eager else "lazy"
+        tag = f'<figcaption class="photo-label">{label}</figcaption>' if label else ""
         return (f'<figure class="photo {extra_cls}" style="margin:0">'
-                f'<img src="img/{file}" alt="{html.escape(alt)}" loading="{loading}" decoding="async" style="object-position:{pos}"></figure>')
+                f'<img src="img/{file}" alt="{html.escape(alt)}" loading="{loading}" decoding="async" style="object-position:{pos}">{tag}</figure>')
     return (f'<figure class="photo {extra_cls}" style="margin:0" role="img" aria-label="{html.escape(alt)}">'
             f'<div class="photo-ph">{ico(icon)}</div></figure>')
 
@@ -500,7 +502,7 @@ def page(title, description, active, body, is_home=False):
 <meta name="description" content="{html.escape(description)}">
 <meta property="og:title" content="{html.escape(full_title)}">
 <meta property="og:description" content="{html.escape(description)}">
-<meta property="og:image" content="https://{F['domain']}/img/hero.jpg">
+<meta property="og:image" content="https://{F['domain']}/img/hero-ai.jpg">
 <meta property="og:locale" content="cs_CZ">
 <meta name="theme-color" content="#005aab">
 <link rel="icon" href="assets/favicon-64.png" type="image/png">
@@ -619,7 +621,7 @@ def home():
       </ul>
     </div>
     <div class="hero-media">
-      {photo('hero', eager=True)}
+      {photo('hero', eager=True, label='Ilustrační foto')}
       <a class="badge-float" href="{F['firmy']}" target="_blank" rel="noopener">{stars()}<b>{F['rating']}</b><span>spokojenost · {F['rating_count']} hodnocení na Firmy.cz</span></a>
     </div>
   </div>
@@ -1033,28 +1035,35 @@ def kontakt():
   </div>
 
   <div>
-    <form class="form" id="poptavka" novalidate>
+    <form class="form" id="poptavka" action="poptavka.php" method="post" accept-charset="UTF-8" novalidate>
       <div class="stack" style="gap:6px"><h2 style="font-size:1.7rem">Nezávazná poptávka</h2>
         <p class="muted" style="font-size:1rem">Vyplnění zabere asi minutu. Pole s hvězdičkou jsou povinná.</p></div>
       <div class="form-row">
-        <div class="field"><label for="f-jmeno">Jméno *</label><input id="f-jmeno" name="jmeno" autocomplete="name" required></div>
-        <div class="field"><label for="f-telefon">Telefon *</label><input id="f-telefon" name="telefon" type="tel" autocomplete="tel" required></div>
+        <div class="field"><label for="f-jmeno">Jméno *</label><input id="f-jmeno" name="jmeno" autocomplete="name" maxlength="100" required></div>
+        <div class="field"><label for="f-telefon">Telefon *</label><input id="f-telefon" name="telefon" type="tel" autocomplete="tel" maxlength="30" required></div>
       </div>
       <div class="form-row">
-        <div class="field"><label for="f-email">E-mail <span class="opt">(nepovinné)</span></label><input id="f-email" name="email" type="email" autocomplete="email"></div>
+        <div class="field"><label for="f-email">E-mail <span class="opt">(nepovinné)</span></label><input id="f-email" name="email" type="email" autocomplete="email" maxlength="120"></div>
         <div class="field"><label for="f-sluzba">Služba *</label><select id="f-sluzba" name="sluzba" required><option value="">Vyberte…</option>{opts}<option value="jine">Něco jiného</option></select></div>
       </div>
       <div class="form-row">
-        <div class="field"><label for="f-misto">Obec, kde se uklízí *</label><input id="f-misto" name="misto" required placeholder="např. Hradec Králové"></div>
-        <div class="field"><label for="f-termin">Kdy by se vám hodilo <span class="opt">(nepovinné)</span></label><input id="f-termin" name="termin" placeholder="např. příští týden"></div>
+        <div class="field"><label for="f-misto">Obec, kde se uklízí *</label><input id="f-misto" name="misto" maxlength="100" required placeholder="např. Hradec Králové"></div>
+        <div class="field"><label for="f-termin">Kdy by se vám hodilo <span class="opt">(nepovinné)</span></label><input id="f-termin" name="termin" maxlength="100" placeholder="např. příští týden"></div>
       </div>
-      <div class="field"><label for="f-zprava">Co potřebujete uklidit *</label><textarea id="f-zprava" name="zprava" required placeholder="např. byt 3+1 po malování, asi 75 m², včetně oken"></textarea></div>
+      <div class="field"><label for="f-zprava">Co potřebujete uklidit *</label><textarea id="f-zprava" name="zprava" maxlength="3000" required placeholder="např. byt 3+1 po malování, asi 75 m², včetně oken"></textarea></div>
       <label class="check-field" for="f-souhlas"><input id="f-souhlas" type="checkbox" name="souhlas" required><span>Beru na vědomí, že mé údaje zpracujete kvůli vyřízení poptávky. Více v&nbsp;<a href="ochrana-udaju.html">zásadách ochrany osobních údajů</a>.</span></label>
-      <button class="btn btn--sun" type="submit">Odeslat poptávku {ico('arrow')}</button>
+      <div class="hp" aria-hidden="true"><label for="f-web">Nevyplňujte</label><input id="f-web" name="web" tabindex="-1" autocomplete="off"></div>
+      <input type="hidden" name="t" id="f-t" value="">
+      <button class="btn btn--sun" type="submit" id="poptavka-submit">Odeslat poptávku {ico('arrow')}</button>
+      <p class="form-error" id="poptavka-error" role="alert" hidden>Poptávku se nepodařilo odeslat. Zkuste to prosím znovu, nebo nám rovnou zavolejte na <a href="{TEL}" class="nobr">{F['phone']}</a>.</p>
     </form>
+    <div class="form-done" id="poptavka-sent" hidden role="status">
+      <h3>Děkujeme, poptávka je odeslaná</h3>
+      <p>Ozveme se vám co nejdřív, obvykle do hodiny. Pokud spěcháte, zavolejte na <a href="{TEL}" class="nobr">{F['phone']}</a>.</p>
+    </div>
     <div class="form-done" id="poptavka-done" hidden>
       <h3>Děkujeme, poptávka je připravená</h3>
-      <p class="muted">V ukázce se nic neodesílá. Na hotovém webu přijde tato zpráva e-mailem na {F['email']}:</p>
+      <p class="muted">Tohle je ukázka, nic se neodeslalo. Na webu uklid-pospisil.cz přijde tato zpráva e-mailem na {F['email']}:</p>
       <pre></pre>
       <button class="btn btn--ghost btn--small" type="button" id="poptavka-again">Upravit poptávku</button>
     </div>
@@ -1063,6 +1072,206 @@ def kontakt():
 
 <section class="section section--tint"><div class="wrap">{area_block()}</div></section>
 """
+
+
+def dekujeme():
+    return f"""
+<section class="page-hero"><div class="wrap" style="padding-block:clamp(56px,9vw,110px)">
+  <span class="eyebrow">{ico('check')} Poptávka odeslána</span>
+  <h1>Děkujeme, ozveme se vám</h1>
+  <p class="lead">Poptávku jsme přijali. Ozveme se co nejdřív, obvykle do hodiny. Pokud spěcháte, zavolejte na <a href="{TEL}" class="nobr">{F['phone']}</a>.</p>
+  <div class="btn-row"><a class="btn btn--sun" href="index.html">Zpět na úvod</a><a class="btn btn--ghost" href="sluzby.html">Naše služby</a></div>
+</div></section>
+"""
+
+
+PHP_TEMPLATE = r'''<?php
+/**
+ * Poptávkový formulář -> e-mail do schránky firmy.
+ * Běží na běžném webhostingu s PHP (Webglobe). Nic neukládá do databáze,
+ * data neodcházejí k žádné třetí straně. Generováno z build.py.
+ */
+declare(strict_types=1);
+date_default_timezone_set('Europe/Prague');
+
+const TO_EMAIL   = '__EMAIL__';        // kam poptávky chodí
+const FROM_EMAIL = '__EMAIL__';        // odesílatel: existující schránka na vlastní doméně
+const SITE_NAME  = 'Úklid Pospíšil';
+const THANKS_URL = 'dekujeme.html';
+const MAX_PER_HOUR = 5;                // ochrana proti spamu: max. poptávek z jedné IP za hodinu
+
+// Přihlášení do schránky pro odesílání přes SMTP (doporučuje Webglobe, méně spamu).
+// Heslo NEPATŘÍ sem ani do gitu: zkopírujte poptavka-config.example.php jako
+// poptavka-config.php (ideálně o složku výš, mimo web) a vyplňte ho tam.
+// Bez konfigurace se použije PHP mail().
+foreach ([__DIR__ . '/../poptavka-config.php', __DIR__ . '/poptavka-config.php'] as $cfg) {
+    if (is_file($cfg)) { require $cfg; break; }
+}
+
+$SERVICES = __SERVICES__;
+
+$wantsJson = str_contains($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json');
+
+function finish(bool $ok, string $msg, bool $json, int $code = 200): never {
+    if ($json) {
+        http_response_code($code);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['ok' => $ok, 'message' => $msg], JSON_UNESCAPED_UNICODE);
+    } elseif ($ok) {
+        header('Location: ' . THANKS_URL, true, 303);
+    } else {
+        http_response_code($code);
+        header('Content-Type: text/html; charset=utf-8');
+        echo '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width">'
+           . '<p style="font:18px system-ui;max-width:40em;margin:3em auto;padding:0 1em">'
+           . htmlspecialchars($msg) . '<br><br><a href="kontakt.html">Zpět na formulář</a></p>';
+    }
+    exit;
+}
+
+if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+    header('Location: kontakt.html', true, 303);
+    exit;
+}
+
+// Hodnoty z formuláře: ořezat, omezit délku, odstranit řídicí znaky
+function field(string $name, int $max, bool $oneLine = true): string {
+    $v = trim((string)($_POST[$name] ?? ''));
+    $v = $oneLine ? preg_replace('/[\r\n\t]+/', ' ', $v) : preg_replace('/\r\n?/', "\n", $v);
+    $v = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', (string)$v);
+    return mb_substr((string)$v, 0, $max);
+}
+
+// 1) Past na roboty: skryté pole musí zůstat prázdné, formulář nesmí být odeslán okamžitě
+$sentAt = (int)($_POST['t'] ?? 0);
+if (field('web', 200) !== '' || ($sentAt > 0 && time() - $sentAt < 3)) {
+    finish(true, 'OK', $wantsJson);   // robotovi tváříme, že prošel
+}
+
+// 2) Limit na IP adresu (ukládá se jen otisk IP na 1 hodinu)
+$bucket = sys_get_temp_dir() . '/poptavka_' . hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '') . __FILE__);
+$hits = array_filter(array_map('intval', @file($bucket, FILE_IGNORE_NEW_LINES) ?: []), fn($t) => $t > time() - 3600);
+if (count($hits) >= MAX_PER_HOUR) {
+    finish(false, 'Odeslali jste už několik poptávek. Zkuste to prosím později, nebo zavolejte.', $wantsJson, 429);
+}
+
+// 3) Kontrola povinných polí
+$d = [
+    'jmeno'   => field('jmeno', 100),
+    'telefon' => field('telefon', 30),
+    'email'   => field('email', 120),
+    'sluzba'  => field('sluzba', 60),
+    'misto'   => field('misto', 100),
+    'termin'  => field('termin', 100),
+    'zprava'  => field('zprava', 3000, false),
+];
+if ($d['jmeno'] === '' || $d['telefon'] === '' || $d['misto'] === '' || $d['zprava'] === '' || empty($_POST['souhlas'])) {
+    finish(false, 'Vyplňte prosím všechna povinná pole.', $wantsJson, 422);
+}
+if (!preg_match('/^[0-9+ ()\/-]{6,30}$/', $d['telefon'])) {
+    finish(false, 'Zkontrolujte prosím telefonní číslo.', $wantsJson, 422);
+}
+if ($d['email'] !== '' && !filter_var($d['email'], FILTER_VALIDATE_EMAIL)) {
+    finish(false, 'Zkontrolujte prosím e-mailovou adresu.', $wantsJson, 422);
+}
+$service = $SERVICES[$d['sluzba']] ?? 'Neuvedeno';
+
+// 4) Sestavení e-mailu
+$body = "Nová poptávka z webu " . SITE_NAME . "\n"
+      . str_repeat('-', 40) . "\n"
+      . "Jméno:    {$d['jmeno']}\n"
+      . "Telefon:  {$d['telefon']}\n"
+      . "E-mail:   " . ($d['email'] ?: '(neuvedeno)') . "\n"
+      . "Služba:   {$service}\n"
+      . "Místo:    {$d['misto']}\n"
+      . "Termín:   " . ($d['termin'] ?: 'dle domluvy') . "\n"
+      . str_repeat('-', 40) . "\n"
+      . $d['zprava'] . "\n\n"
+      . "Odesláno: " . date('j. n. Y H:i') . "\n"
+      . "Zákazník potvrdil, že bere na vědomí zásady ochrany osobních údajů.\n";
+
+$subject = 'Poptávka z webu: ' . $service . ' – ' . $d['misto'];
+$headers = [
+    'From: ' . mb_encode_mimeheader(SITE_NAME . ' – web', 'UTF-8', 'B') . ' <' . FROM_EMAIL . '>',
+    'MIME-Version: 1.0',
+    'Content-Type: text/plain; charset=UTF-8',
+    'Content-Transfer-Encoding: 8bit',
+    'X-Mailer: uklid-pospisil-web',
+];
+if ($d['email'] !== '') {
+    $headers[] = 'Reply-To: =?UTF-8?B?' . base64_encode($d['jmeno']) . '?= <' . $d['email'] . '>';
+}
+
+/** Minimal SMTP client (SSL 465 nebo STARTTLS 587) s přihlášením AUTH LOGIN. */
+function smtp_send(string $to, string $subject, string $body, array $headers): bool {
+    $secure = defined('SMTP_SECURE') ? SMTP_SECURE : 'ssl';
+    $host = ($secure === 'ssl' ? 'ssl://' : '') . SMTP_HOST;
+    $fp = @stream_socket_client($host . ':' . SMTP_PORT, $errno, $errstr, 15);
+    if (!$fp) { error_log("poptavka smtp connect: $errstr"); return false; }
+    stream_set_timeout($fp, 15);
+    $read = function () use ($fp): string {
+        $out = '';
+        while (($line = fgets($fp, 515)) !== false) { $out .= $line; if (isset($line[3]) && $line[3] === ' ') break; }
+        return $out;
+    };
+    $cmd = function (string $c, array $expect) use ($fp, $read): bool {
+        if ($c !== '') fwrite($fp, $c . "\r\n");
+        $r = $read();
+        if (!in_array((int)substr($r, 0, 3), $expect, true)) { error_log('poptavka smtp: ' . trim($r)); return false; }
+        return true;
+    };
+    $ehlo = 'EHLO ' . ($_SERVER['SERVER_NAME'] ?? 'localhost');
+    $ok = $cmd('', [220]) && $cmd($ehlo, [250]);
+    if ($ok && $secure === 'tls') {
+        $ok = $cmd('STARTTLS', [220]) && stream_socket_enable_crypto($fp, true, STREAM_CRYPTO_METHOD_TLS_CLIENT) && $cmd($ehlo, [250]);
+    }
+    $ok = $ok && $cmd('AUTH LOGIN', [334]) && $cmd(base64_encode(SMTP_USER), [334]) && $cmd(base64_encode(SMTP_PASS), [235])
+        && $cmd('MAIL FROM:<' . FROM_EMAIL . '>', [250]) && $cmd('RCPT TO:<' . $to . '>', [250, 251]) && $cmd('DATA', [354]);
+    if ($ok) {
+        $msg = 'Date: ' . date('r') . "\r\n"
+             . 'Message-ID: <' . bin2hex(random_bytes(12)) . '@' . substr(strrchr(FROM_EMAIL, '@'), 1) . ">\r\n"
+             . 'To: <' . $to . ">\r\n"
+             . 'Subject: ' . $subject . "\r\n"
+             . implode("\r\n", str_replace('Content-Transfer-Encoding: 8bit', 'Content-Transfer-Encoding: base64', $headers)) . "\r\n\r\n"
+             . chunk_split(base64_encode($body));
+        $ok = $cmd($msg . "\r\n.", [250]);   // base64 body never contains a lone '.' line
+    }
+    @fwrite($fp, "QUIT\r\n");
+    fclose($fp);
+    return $ok;
+}
+
+$encSubject = mb_encode_mimeheader($subject, 'UTF-8', 'B');
+if (defined('SMTP_HOST') && defined('SMTP_USER') && defined('SMTP_PASS')) {
+    $ok = smtp_send(TO_EMAIL, $encSubject, $body, $headers);
+} else {
+    $ok = mail(TO_EMAIL, $encSubject, $body, implode("\r\n", $headers), '-f' . FROM_EMAIL);
+}
+if (!$ok) {
+    finish(false, 'Poptávku se nepodařilo odeslat. Zavolejte nám prosím.', $wantsJson, 500);
+}
+$hits[] = time();
+@file_put_contents($bucket, implode("\n", $hits));
+finish(true, 'Děkujeme, poptávka je odeslaná.', $wantsJson);
+'''
+
+
+PHP_CONFIG_EXAMPLE = """<?php
+// Zkopírujte jako poptavka-config.php (nejlépe o složku výš, mimo veřejný web)
+// a vyplňte heslo ke schránce. Tento soubor s heslem nikdy nedávejte do gitu.
+const SMTP_HOST   = 'mail.webglobe.cz';
+const SMTP_PORT   = 465;          // 465 = SSL/TLS, 587 = STARTTLS
+const SMTP_SECURE = 'ssl';        // 'ssl' pro 465, 'tls' pro 587
+const SMTP_USER   = '__EMAIL__';
+const SMTP_PASS   = 'SEM-HESLO-KE-SCHRANCE';
+"""
+
+
+def php_handler():
+    services = {s["slug"]: s["name"] for s in SERVICES}
+    services["jine"] = "Něco jiného"
+    arr = "[\n" + "".join(f"    '{k}' => '{v}',\n" for k, v in services.items()) + "]"
+    return PHP_TEMPLATE.replace("__EMAIL__", F["email"]).replace("__SERVICES__", arr)
 
 
 def kariera():
@@ -1117,7 +1326,8 @@ def gdpr():
         <tr><td>Zakázka a fakturace</td><td>jméno, adresa, kontakt, fakturační údaje, případně klíče od prostor</td><td>provedení úklidu a vystavení dokladu; plnění smlouvy a zákonné povinnosti (písm. b a c)</td><td>po dobu spolupráce, účetní doklady 10 let</td></tr>
         <tr><td>Zájem o práci</td><td>jméno, telefon, e-mail, životopis</td><td>výběr spolupracovníků; jednání o smlouvě (písm. b), případně váš souhlas (písm. a)</td><td>nejvýše 1 rok</td></tr>
         <tr><td>Hodnocení na webu</td><td>křestní jméno a iniciála, text hodnocení</td><td>zveřejnění veřejně dostupných hodnocení z Firmy.cz; oprávněný zájem (písm. f)</td><td>dokud hodnocení nesmažete nebo nevznesete námitku</td></tr>
-      </tbody></table></div>"""
+      </tbody></table></div>
+      <p>Poptávkový formulář odešle zprávu přímo z našeho webhostingu do naší e-mailové schránky. Nikde jinde se neukládá a nepoužívá žádnou službu třetí strany. Kvůli ochraně proti spamu si server na jednu hodinu ukládá nevratný otisk (hash) vaší IP adresy.</p>"""
     b0 = block("Správce údajů", f"<p>{F['legal']}, IČO {F['ico']}, se sídlem {F['address']}. Kontakt pro otázky k osobním údajům: <a href=\"{MAILTO}\">{F['email']}</a>, telefon {F['phone']}, datová schránka {F['datovka']}.</p><p class=\"muted\">Pověřence pro ochranu osobních údajů jmenovat nemusíme, zpracováváme jen běžné údaje v malém rozsahu.</p>")
     b1 = block("Jaké údaje zpracováváme a proč", table)
     b2 = block("Komu údaje předáváme", "<p>Údaje neprodáváme a nepředáváme k marketingu. Přístup k nim mají jen naši zpracovatelé, a to poskytovatel webhostingu a e-mailu (Webglobe), účetní a případně spolupracovníci, kteří pro vás úklid provádějí. Dále orgány veřejné moci, pokud to stanoví zákon.</p>")
@@ -1173,6 +1383,7 @@ def build():
         ("reference.html", "Reference a fotky před a po", "Hodnocení zákazníků a skutečné fotky před a po úklidu.", "reference", reference(), False),
         ("kontakt.html", "Kontakt a poptávka", f"Telefon {F['phone']}, e-mail {F['email']}. Nezávazná poptávka úklidu.", "kontakt", kontakt(), False),
         ("kariera.html", "Práce u nás", "Hledáme spolehlivé lidi na úklid v Hradci Králové a okolí. DPP, flexibilní pracovní doba.", "", kariera(), False),
+        ("dekujeme.html", "Děkujeme", "Poptávka byla odeslána.", "", dekujeme(), False),
         ("ochrana-udaju.html", "Ochrana osobních údajů", "Jak Úklid Pospíšil zpracovává osobní údaje.", "", gdpr(), False),
     ]
     for s in SERVICES:
@@ -1194,13 +1405,21 @@ def build():
         with open(os.path.join(OUT, "_redirects"), "w", encoding="utf-8") as fh:
             fh.write("".join(f"{a}  {b}  301\n" for a, b in REDIRECTS.items()))
         with open(os.path.join(OUT, ".htaccess"), "w", encoding="utf-8") as fh:
-            fh.write("RewriteEngine On\n" + "".join(
+            fh.write('<FilesMatch "^poptavka-config">\n  Require all denied\n</FilesMatch>\n'
+                     "RewriteEngine On\n" + "".join(
                 f"RewriteRule ^{re.escape(a.strip('/'))}/?$ {b.split('#')[0]} [R=301,L{',NE' if '#' in b else ''}]\n"
                 for a, b in REDIRECTS.items() if not a.endswith('/') or a.rstrip('/') not in REDIRECTS))
+        with open(os.path.join(OUT, "poptavka.php"), "w", encoding="utf-8") as fh:
+            fh.write(php_handler())
+        with open(os.path.join(OUT, "poptavka-config.example.php"), "w", encoding="utf-8") as fh:
+            fh.write(PHP_CONFIG_EXAMPLE.replace("__EMAIL__", F["email"]))
+        # the Vercel demo cannot run PHP; keep the handler out of it
+        with open(os.path.join(OUT, ".vercelignore"), "w", encoding="utf-8") as fh:
+            fh.write("poptavka.php\npoptavka-config.example.php\n")
         with open(os.path.join(OUT, "robots.txt"), "w", encoding="utf-8") as fh:
             fh.write(f"User-agent: *\nAllow: /\nSitemap: https://{F['domain']}/sitemap.xml\n")
         with open(os.path.join(OUT, "sitemap.xml"), "w", encoding="utf-8") as fh:
-            urls = "".join(f"<url><loc>https://{F['domain']}/{'' if p[0] == 'index.html' else p[0]}</loc></url>" for p in pages)
+            urls = "".join(f"<url><loc>https://{F['domain']}/{'' if p[0] == 'index.html' else p[0]}</loc></url>" for p in pages if p[0] != "dekujeme.html")
             fh.write(f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n')
     else:
         shutil.copytree(os.path.join(ROOT, "site", "img"), os.path.join(OUT, "img"), dirs_exist_ok=True)

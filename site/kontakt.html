@@ -7,7 +7,7 @@
 <meta name="description" content="Telefon 722 285 427, e-mail info@uklid-pospisil.cz. Nezávazná poptávka úklidu.">
 <meta property="og:title" content="Kontakt a poptávka | Úklid Pospíšil">
 <meta property="og:description" content="Telefon 722 285 427, e-mail info@uklid-pospisil.cz. Nezávazná poptávka úklidu.">
-<meta property="og:image" content="https://uklid-pospisil.cz/img/hero.jpg">
+<meta property="og:image" content="https://uklid-pospisil.cz/img/hero-ai.jpg">
 <meta property="og:locale" content="cs_CZ">
 <meta name="theme-color" content="#005aab">
 <link rel="icon" href="assets/favicon-64.png" type="image/png">
@@ -56,28 +56,35 @@
   </div>
 
   <div>
-    <form class="form" id="poptavka" novalidate>
+    <form class="form" id="poptavka" action="poptavka.php" method="post" accept-charset="UTF-8" novalidate>
       <div class="stack" style="gap:6px"><h2 style="font-size:1.7rem">Nezávazná poptávka</h2>
         <p class="muted" style="font-size:1rem">Vyplnění zabere asi minutu. Pole s&nbsp;hvězdičkou jsou povinná.</p></div>
       <div class="form-row">
-        <div class="field"><label for="f-jmeno">Jméno *</label><input id="f-jmeno" name="jmeno" autocomplete="name" required></div>
-        <div class="field"><label for="f-telefon">Telefon *</label><input id="f-telefon" name="telefon" type="tel" autocomplete="tel" required></div>
+        <div class="field"><label for="f-jmeno">Jméno *</label><input id="f-jmeno" name="jmeno" autocomplete="name" maxlength="100" required></div>
+        <div class="field"><label for="f-telefon">Telefon *</label><input id="f-telefon" name="telefon" type="tel" autocomplete="tel" maxlength="30" required></div>
       </div>
       <div class="form-row">
-        <div class="field"><label for="f-email">E-mail <span class="opt">(nepovinné)</span></label><input id="f-email" name="email" type="email" autocomplete="email"></div>
+        <div class="field"><label for="f-email">E-mail <span class="opt">(nepovinné)</span></label><input id="f-email" name="email" type="email" autocomplete="email" maxlength="120"></div>
         <div class="field"><label for="f-sluzba">Služba *</label><select id="f-sluzba" name="sluzba" required><option value="">Vyberte…</option><option value="uklid-domacnosti">Úklid domácností</option><option value="uklid-firem">Úklid firem a&nbsp;společných prostor</option><option value="uklid-po-stavbe">Úklid po stavbě a&nbsp;malování</option><option value="myti-oken">Mytí oken a&nbsp;žaluzií</option><option value="cisteni-kobercu-a-calouneni">Čištění koberců, sedaček a&nbsp;matrací</option><option value="uklid-po-pojistne-udalosti">Úklid po havárii a&nbsp;škodní události</option><option value="jine">Něco jiného</option></select></div>
       </div>
       <div class="form-row">
-        <div class="field"><label for="f-misto">Obec, kde se uklízí *</label><input id="f-misto" name="misto" required placeholder="např. Hradec Králové"></div>
-        <div class="field"><label for="f-termin">Kdy by se vám hodilo <span class="opt">(nepovinné)</span></label><input id="f-termin" name="termin" placeholder="např. příští týden"></div>
+        <div class="field"><label for="f-misto">Obec, kde se uklízí *</label><input id="f-misto" name="misto" maxlength="100" required placeholder="např. Hradec Králové"></div>
+        <div class="field"><label for="f-termin">Kdy by se vám hodilo <span class="opt">(nepovinné)</span></label><input id="f-termin" name="termin" maxlength="100" placeholder="např. příští týden"></div>
       </div>
-      <div class="field"><label for="f-zprava">Co potřebujete uklidit *</label><textarea id="f-zprava" name="zprava" required placeholder="např. byt 3+1 po malování, asi 75 m², včetně oken"></textarea></div>
+      <div class="field"><label for="f-zprava">Co potřebujete uklidit *</label><textarea id="f-zprava" name="zprava" maxlength="3000" required placeholder="např. byt 3+1 po malování, asi 75 m², včetně oken"></textarea></div>
       <label class="check-field" for="f-souhlas"><input id="f-souhlas" type="checkbox" name="souhlas" required><span>Beru na vědomí, že mé údaje zpracujete kvůli vyřízení poptávky. Více v&nbsp;<a href="ochrana-udaju.html">zásadách ochrany osobních údajů</a>.</span></label>
-      <button class="btn btn--sun" type="submit">Odeslat poptávku <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <div class="hp" aria-hidden="true"><label for="f-web">Nevyplňujte</label><input id="f-web" name="web" tabindex="-1" autocomplete="off"></div>
+      <input type="hidden" name="t" id="f-t" value="">
+      <button class="btn btn--sun" type="submit" id="poptavka-submit">Odeslat poptávku <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <p class="form-error" id="poptavka-error" role="alert" hidden>Poptávku se nepodařilo odeslat. Zkuste to prosím znovu, nebo nám rovnou zavolejte na <a href="tel:+420722285427" class="nobr">722 285 427</a>.</p>
     </form>
+    <div class="form-done" id="poptavka-sent" hidden role="status">
+      <h3>Děkujeme, poptávka je odeslaná</h3>
+      <p>Ozveme se vám co nejdřív, obvykle do hodiny. Pokud spěcháte, zavolejte na <a href="tel:+420722285427" class="nobr">722 285 427</a>.</p>
+    </div>
     <div class="form-done" id="poptavka-done" hidden>
       <h3>Děkujeme, poptávka je připravená</h3>
-      <p class="muted">V&nbsp;ukázce se nic neodesílá. Na hotovém webu přijde tato zpráva e-mailem na info@uklid-pospisil.cz:</p>
+      <p class="muted">Tohle je ukázka, nic se neodeslalo. Na webu uklid-pospisil.cz přijde tato zpráva e-mailem na info@uklid-pospisil.cz:</p>
       <pre></pre>
       <button class="btn btn--ghost btn--small" type="button" id="poptavka-again">Upravit poptávku</button>
     </div>
